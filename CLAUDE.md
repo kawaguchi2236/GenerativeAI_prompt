@@ -1,36 +1,36 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリで作業する際にClaude Code（claude.ai/code）が従うべきガイダンスを提供します。
 
-## Repository purpose
+## リポジトリの目的
 
-This is a prompt library, not a software project — there is no source code, build system, package manifest, linter, or test suite. The repository stores reusable Japanese-language prompt templates (`.md` files) intended to be pasted into LLM-based tools (Microsoft Copilot for PowerPoint, ChatGPT, Claude, etc.) for two recurring business tasks:
+このリポジトリはソフトウェアプロジェクトではなく、プロンプト集です——ソースコード、ビルドシステム、パッケージマニフェスト、リンター、テストスイートは存在しません。再利用可能な日本語のプロンプトテンプレート（`.md`ファイル）を保管しており、LLMベースのツール（Microsoft Copilot for PowerPoint、ChatGPT、Claudeなど）に貼り付けて使うことを想定した、以下2つの定型業務向けです。
 
-1. Redesigning/improving PowerPoint (PPTX) decks.
-2. Analyzing Wakucone PC-usage-monitoring CSV exports and turning them into a customer-facing report plus a follow-up PPTX-generation prompt.
+1. PowerPoint（PPTX）資料のリデザイン・改善
+2. Wakucone（PC利用監視）のCSV出力を分析し、顧客向けレポートと、それに続くPPTX生成用プロンプトを作成すること
 
-There is nothing to compile, lint, or test. "Working in this repo" means editing or adding Markdown prompt files.
+コンパイル・lint・テストの対象になるものは何もありません。「このリポジトリで作業する」とは、Markdownのプロンプトファイルを編集・追加することを意味します。
 
-## Structure
+## 構成
 
 ```
 Copilot/
-  pptxリメイク.md                              Standalone prompt: redesign an existing PPTX deck
-  wakucone分析.md                              Master instruction doc (v4): Wakucone CSV → Markdown report + PPTX prompt
-  ver/wakucone_stage1_markdown_analysis_prompt.md   An earlier/alternate variant of the Wakucone stage-1 prompt
+  pptxリメイク.md                              単独プロンプト：既存PPTX資料のリデザイン
+  wakucone分析.md                              マスター指示書（v4）：Wakuconeログ → マークダウン分析レポート＋PPTX作成用プロンプト
+  ver/wakucone_stage1_markdown_analysis_prompt.md   Wakucone第1段階プロンプトの旧版・別バージョン
 ```
 
-- `pptxリメイク.md` is self-contained: role, goals, a slide-improvement methodology (one message per slide, chart/table/color rules, layout flow), and required final output sections.
-- `wakucone分析.md` and `ver/wakucone_stage1_markdown_analysis_prompt.md` are two versions of the same "stage 1" prompt. `wakucone分析.md` is the more complete/current version (it adds sample-data detection, a `pandas`-based CSV reading snippet, additional banned-phrase rules, and a fuller PowerPoint-prompt template at the end). Treat `wakucone分析.md` as canonical when reconciling differences; `ver/...` appears to be a superseded draft kept for reference.
+- `pptxリメイク.md`は単体で完結している：役割、目的、スライド改善の方法論（1スライド1メッセージ、グラフ・表・配色のルール、レイアウトの流れ）、必須の最終出力セクションを含む。
+- `wakucone分析.md`と`ver/wakucone_stage1_markdown_analysis_prompt.md`は、同じ「第1段階」プロンプトの2バージョン。`wakucone分析.md`がより完全・最新の版（サンプルデータ判定、`pandas`ベースのCSV読み込みスニペット、追加の禁止表現ルール、末尾のより充実したPowerPoint作成用プロンプトのテンプレートを含む）。差分を統合する際は`wakucone分析.md`を正とすること。`ver/...`は参考用に残されている旧版とみられる。
 
-## Conventions when editing these prompts
+## これらのプロンプトを編集する際の規約
 
-- **Language**: all prompt content is Japanese. Keep additions/edits in Japanese and match the existing tone (formal, business-consulting register — です/ます調).
-- **Two-stage Wakucone pipeline is load-bearing**: stage 1 (`wakucone分析.md`) explicitly must *not* produce a PPTX — it only produces a Markdown analysis report plus a PowerPoint-generation prompt for a separate stage 2 (Copilot for PowerPoint). Don't blur this boundary when modifying the prompt.
-- **Banned/required phrasing rules are part of the spec, not incidental text**: e.g. customer-facing output must avoid accusatory/surveillance language (`問題です`, `違反です`, `怪しいです`, `監視対象です`, etc.) and use hedged alternatives (`〜の可能性があります`, `〜の傾向が見られます`); the heading "顧客と確認すべき仮説" is explicitly disallowed in favor of "確認すべき仮説" / "今後の確認ポイント". When editing these files, preserve and extend these allow/deny phrase lists rather than overriding them.
-- **Structural templates are exact specs**: section orders (the final Markdown report structure, the recommended slide deck structure, the embedded PowerPoint-prompt template) are explicit deliverable contracts other prompts/users depend on — don't reorder or drop sections silently.
-- **Embedded Python snippets** (`pandas`-based CSV readers in `wakucone分析.md`) are illustrative reference code for the LLM to follow when a code interpreter is available, not an executable module in this repo — there's no Python project/dependencies to install.
+- **言語**：プロンプトの内容はすべて日本語。追加・編集も日本語で行い、既存のトーン（フォーマルなビジネスコンサル調・です/ます調）に合わせること。
+- **Wakuconeの2段階パイプラインは構造の根幹**：第1段階（`wakucone分析.md`）は明示的にPPTXを生成してはならず、マークダウン分析レポートと、別の第2段階（Copilot for PowerPoint）向けのPowerPoint作成用プロンプトのみを出力する。プロンプトを修正する際にこの境界を曖昧にしないこと。
+- **禁止／必須の言い回しルールは仕様の一部であり、付随的な記述ではない**：例えば顧客向け出力では、断定的・監視的な表現（`問題です`、`違反です`、`怪しいです`、`監視対象です`など）を避け、ヘッジ表現（`〜の可能性があります`、`〜の傾向が見られます`）を使う必要がある。見出し「顧客と確認すべき仮説」は明示的に禁止されており、代わりに「確認すべき仮説」「今後の確認ポイント」を使う。これらのファイルを編集する際は、許可／禁止表現リストを上書きするのではなく、保持・拡張すること。
+- **構成テンプレートは厳密な仕様**：セクションの順序（最終的なマークダウンレポートの構成、推奨スライド構成、埋め込まれたPowerPoint作成用プロンプトのテンプレート）は、他のプロンプト・利用者が依存する明確な成果物の契約であり、無断で並び替えたりセクションを削ったりしないこと。
+- **埋め込まれたPythonスニペット**（`wakucone分析.md`内の`pandas`ベースのCSV読み込み処理）は、コードインタープリターが利用可能な場合にLLMが参考にする例示コードであり、このリポジトリ内で実行可能なモジュールではない——インストールすべきPythonプロジェクトや依存関係は存在しない。
 
-## Working with git
+## gitでの作業
 
-No CI, hooks, or branch protections are configured beyond normal git. Make focused commits to the relevant `.md` file(s) under `Copilot/`.
+通常のgit以外に、CI・フック・ブランチ保護は設定されていません。`Copilot/`配下の関連する`.md`ファイルに対して、焦点を絞ったコミットを行ってください。
